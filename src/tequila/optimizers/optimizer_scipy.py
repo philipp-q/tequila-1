@@ -163,16 +163,17 @@ class OptimizerSciPy(Optimizer):
                 infostring += "{:15} : scipy numerical {}\n".format("gradient", dE)
                 infostring += "{:15} : scipy numerical {}\n".format("hessian", ddE)
 
-        elif isinstance(gradient,dict):
+        if isinstance(gradient,dict):
             if gradient['method'] == 'qng':
                 func = gradient['function']
                 compile_gradient = False
+                if compile_hessian:
+                    raise TequilaException('Sorry, QNG and hessian not yet tested together.')
+
                 combos = get_qng_combos(objective,func=func, initial_values=initial_values, backend=self.backend,
                                         samples=self.samples, noise=self.noise)
                 dE = _QngContainer(combos=combos, param_keys=param_keys, passive_angles=passive_angles)
                 infostring += "{:15} : QNG {}\n".format("gradient", dE)
-            else:
-                raise TequilaException('your dictionary {} is formatted improperly. Please try again.'.format(str(gradient)))
 
         if isinstance(hessian, str):
             ddE = hessian

@@ -54,7 +54,7 @@ class CallableVector:
         return (len(self._vector))
 
     def __init__(self,vector):
-        self._vector=vector
+        self._vector = vector
 
 
     def __call__(self, variables,samples=None):
