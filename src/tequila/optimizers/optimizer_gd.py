@@ -157,6 +157,16 @@ class OptimizerGD(Optimizer):
             else:
                 gradient = {"method": gradient, "stepsize": 1.e-4}
 
+        elif isinstance(gradient,dict):
+            if gradient['method'] == 'qng':
+                func = gradient['function']
+                compile_gradient = False
+                combos = get_qng_combos(objective,func=func, initial_values=initial_values, backend=self.backend,
+                                        samples=self.samples, noise=self.noise,
+                                        backend_options=self.backend_options)
+                dE = QNGVector(combos)
+            else:
+                raise TequilaException('your dictionary {} is formatted improperly. Please try again.'.format(str(gradient)))
         if compile_gradient:
             grad_obj, comp_grad_obj = self.compile_gradient(objective=objective, variables=variables, gradient=gradient)
             dE = CallableVector([comp_grad_obj[k] for k in comp_grad_obj.keys()])
